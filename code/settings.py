@@ -4,6 +4,12 @@ HEIGHT   = 720
 FPS      = 60
 TILESIZE = 64
 
+HITBOX_OFFSET ={
+	'player':-26,
+	'object':-40,
+	'grass': -10,
+	'invisible': 0}
+
 # colors
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
@@ -28,6 +34,12 @@ ENERGY_BAR_WIDTH = 140
 ITEM_BOX_SIZE = 80
 UI_FONT = '../graphics/font/joystix.ttf'
 UI_FONT_SIZE = 18
+
+# upgrade menu
+TEXT_COLOR_SELECTED = UI_BORDER_COLOR
+BAR_COLOR = WHITE
+BAR_COLOR_SELECTED = UI_BORDER_COLOR
+UPGRADE_BG_COLOR_SELECTED = WHITE
 
 # weapons 
 weapon_data = {

@@ -8,7 +8,7 @@ class Player(Entity):
 		super().__init__(groups)
 		self.image = pygame.image.load('../graphics/test/player.png').convert_alpha()
 		self.rect = self.image.get_rect(topleft=pos)
-		self.hitbox = self.rect.inflate(0,-26)
+		self.hitbox = self.rect.inflate(-6,HITBOX_OFFSET['player'])
 
 		# graphics setup
 		self.import_player_assets()
@@ -40,15 +40,21 @@ class Player(Entity):
 
 		# stats
 		self.stats = {'health':100, 'energy':60, 'attack':10, 'magic':4, 'speed':6}
+		self.max_stats = {'health':500, 'energy':200, 'attack':30, 'magic':15, 'speed':10}
+		self.upgrade_cost = {'health':100, 'energy':100, 'attack':100, 'magic':100, 'speed':100}
 		self.health = self.stats['health']
 		self.energy = self.stats['energy']
-		self.exp = 123
+		self.exp = 500
 		self.speed = self.stats['speed']
 
 		# damage timer
 		self.vulnerable = True
 		self.hit_time = None
 		self.invulnerability_duration = 500
+
+		# import sound
+		self.weapon_attack_sound = pygame.mixer.Sound('../audio/sword.wav')
+		self.weapon_attack_sound.set_volume(0.4)
 
 	def import_player_assets(self):
 		character_path = '../graphics/player/'
@@ -108,6 +114,7 @@ class Player(Entity):
 				self.attacking = True
 				self.attack_time = pygame.time.get_ticks()
 				self.create_attack()
+				self.weapon_attack_sound.play()
 
 			# magic input
 			if keys[pygame.K_LCTRL]:
@@ -182,9 +189,27 @@ class Player(Entity):
 		weapon_dmg = weapon_data[self.weapon]['damage']
 		return base_dmg + weapon_dmg
 
+	def get_full_magic_dmg(self):
+		base_dmg = self.stats['magic']
+		spell_dmg = magic_data[self.magic]['strength']
+		return base_dmg + spell_dmg
+
+	def get_value_by_index(self,index):
+		return list(self.stats.values())[index]
+
+	def get_cost_by_index(self,index):
+		return list(self.upgrade_cost.values())[index]
+
+	def energy_recovery(self):
+		if self.energy <= self.stats['energy']:
+			self.energy += 0.01 * self.stats['magic']
+		else:
+			self.energy = self.stats['energy']
+
 	def update(self):
 		self.input()
 		self.cooldowns()
 		self.get_facing()
 		self.animate()
-		self.move(self.speed)
+		self.energy_recovery()
+		self.move(self.stats['speed'])
